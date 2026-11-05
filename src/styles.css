@@ -1,3 +1,363 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;1,400&family=Manrope:wght@300;400;600&display=swap');
+
+:root {
+  --ox: #29151C;
+  --earth: #502B27;
+  --terra: #A85031;
+  --copper: #BD824F;
+  --gold: #C9A66B;
+  --ivory: #F1E6D5
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0
+}
+
+html {
+  background: var(--ox);
+  color: var(--ivory);
+  font-family: Manrope,system-ui,sans-serif;
+  font-weight: 300;
+  scroll-behavior: smooth
+}
+
+body {
+  min-height: 100svh;
+  background: radial-gradient(ellipse at 50% 0,var(--earth),var(--ox) 70%) fixed
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  transition: opacity 2s
+}
+
+  .stage.dim {
+    opacity: .35;
+    pointer-events: none
+  }
+
+.intro, .page {
+  position: relative;
+  z-index: 1
+}
+
+.intro {
+  min-height: 100svh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 1.6rem;
+  text-align: center;
+  padding: 2rem
+}
+
+.pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 24px 6px var(--copper);
+  animation: p 2.4s ease-in-out infinite
+}
+
+@keyframes p {
+  50% {
+    transform: scale(1.8);
+    opacity: .6
+  }
+}
+
+.eyebrow {
+  font-size: .72rem;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--gold)
+}
+
+h1, h2, h3, h4, .lead, .verse, .count b {
+  font-family: 'Cormorant Garamond',serif;
+  font-weight: 300
+}
+
+em {
+  font-style: italic;
+  color: var(--copper)
+}
+
+.cta {
+  display: inline-block;
+  padding: .95rem 2rem;
+  border: 1px solid var(--gold);
+  color: var(--ivory);
+  background: transparent;
+  font: inherit;
+  font-size: .78rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: .3s
+}
+
+  .cta:hover, .cta:focus-visible {
+    background: var(--gold);
+    color: var(--ox)
+  }
+
+  .cta.ghost {
+    border-color: var(--copper);
+    color: var(--copper)
+  }
+
+.skip {
+  position: fixed;
+  bottom: 1.4rem;
+  background: none;
+  border: 0;
+  color: var(--ivory);
+  opacity: .6;
+  font: inherit;
+  font-size: .72rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  cursor: pointer
+}
+
+.flash {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  background: radial-gradient(circle,#f1e6d5,var(--gold));
+  pointer-events: none;
+  animation: f 2s ease-out forwards
+}
+
+@keyframes f {
+  to {
+    opacity: 0;
+    visibility: hidden
+  }
+}
+
+.hero {
+  min-height: 100svh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden
+}
+
+h1 {
+  font-size: clamp(3rem,11vw,8rem);
+  line-height: 1
+}
+
+h2 {
+  font-size: clamp(1.3rem,3vw,2rem);
+  font-style: italic;
+  color: var(--gold)
+}
+
+.when {
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  font-size: .85rem
+}
+
+.sub {
+  opacity: .75
+}
+
+.count {
+  display: flex;
+  gap: clamp(.8rem,3vw,2rem);
+  margin-top: 2rem
+}
+
+  .count div {
+    display: grid;
+    gap: .2rem;
+    min-width: 3.6rem
+  }
+
+  .count b {
+    font-size: clamp(2rem,6vw,3.4rem);
+    color: var(--gold)
+  }
+
+  .count span {
+    font-size: .62rem;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+    opacity: .7
+  }
+
+.bloom {
+  position: absolute;
+  width: clamp(160px,28vw,340px);
+  fill: none;
+  stroke: var(--copper);
+  stroke-width: .5;
+  opacity: .35;
+  animation: spin 90s linear infinite
+}
+
+.b1 {
+  top: -60px;
+  left: -60px
+}
+
+.b2 {
+  bottom: -80px;
+  right: -60px;
+  animation-direction: reverse
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg)
+  }
+}
+
+.block {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 6rem 1.5rem;
+  text-align: center;
+  display: grid;
+  gap: 1.1rem;
+  justify-items: center
+}
+
+  .block h3 {
+    font-size: clamp(2rem,6vw,3.2rem)
+  }
+
+.lead {
+  font-size: 1.5rem;
+  font-style: italic
+}
+
+.amp {
+  font-family: 'Cormorant Garamond',serif;
+  font-size: 2rem;
+  color: var(--copper)
+}
+
+.verse {
+  font-size: 1.4rem;
+  color: var(--gold);
+  line-height: 1.6
+}
+
+.prog {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1.6rem;
+  width: 100%;
+  text-align: left
+}
+
+  .prog li {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: 1.2rem;
+    border-top: 1px solid #c9a66b40;
+    padding-top: 1.2rem
+  }
+
+  .prog time {
+    font-family: 'Cormorant Garamond',serif;
+    font-size: 1.6rem;
+    color: var(--gold)
+  }
+
+  .prog h4 {
+    font-size: 1.5rem
+  }
+
+  .prog p {
+    opacity: .7
+  }
+
+.swatches {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center
+}
+
+  .swatches li {
+    display: grid;
+    gap: .6rem;
+    justify-items: center;
+    font-size: .78rem;
+    letter-spacing: .14em;
+    text-transform: uppercase
+  }
+
+  .swatches i {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px solid var(--gold)
+  }
+
+.field {
+  display: grid;
+  gap: .5rem;
+  width: min(100%,24rem);
+  text-align: left;
+  font-size: .72rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold)
+}
+
+  .field input {
+    background: #ffffff0d;
+    border: 1px solid #c9a66b66;
+    color: var(--ivory);
+    padding: .9rem;
+    font: inherit;
+    font-size: 1rem
+  }
+
+.row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center
+}
+
+.link {
+  color: var(--gold);
+  font-size: .8rem
+}
+
+.end {
+  padding-bottom: 8rem
+}
+
+@media (prefers-reduced-motion:reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important
+  }
+}
