@@ -1,0 +1,94 @@
+<canvas #stage class="stage" [class.dim]="phase() === 'reveal' || phase() === 'exploring'" aria-hidden="true"></canvas>
+
+@if (phase() === 'ready' || phase() === 'opening') {
+<section class="intro">
+  <span class="pulse" aria-hidden="true"></span>
+  <p class="eyebrow">Something beautiful is bringing us together</p>
+  @if (phase() === 'ready') {
+  <button class="cta" (click)="begin()">Begin the celebration</button>
+  }
+  <button class="skip" (click)="skip()">Skip to the invitation</button>
+</section>
+} @else {
+<div class="flash" aria-hidden="true"></div>
+<main class="page">
+  <section class="hero">
+    <svg class="bloom b1" viewBox="-50 -50 100 100" aria-hidden="true">
+      @for (a of petals; track a) {
+      <ellipse cx="0" cy="-22" rx="9" ry="22" [attr.transform]="'rotate(' + a + ')'" /> }
+      <circle r="6" />
+    </svg>
+    <svg class="bloom b2" viewBox="-50 -50 100 100" aria-hidden="true">
+      @for (a of petals; track a) {
+      <ellipse cx="0" cy="-22" rx="9" ry="22" [attr.transform]="'rotate(' + a + ')'" /> }
+      <circle r="6" />
+    </svg>
+    <p class="eyebrow">The celebration of</p>
+    <h1>{{ invite.groom }} <em>&amp;</em> {{ invite.bride }}</h1>
+    <h2>{{ invite.occasion }}</h2>
+    <p class="when">{{ invite.dateLabel }} · {{ invite.timeLabel }}</p>
+    <p class="sub">A gathering of family, love and celebration.</p>
+    <div class="count" role="timer" aria-label="Countdown to the celebration">
+      <div><b>{{ pad(left().days) }}</b><span>Days</span></div>
+      <div><b>{{ pad(left().hours) }}</b><span>Hours</span></div>
+      <div><b>{{ pad(left().mins) }}</b><span>Minutes</span></div>
+      <div><b>{{ pad(left().secs) }}</b><span>Seconds</span></div>
+    </div>
+  </section>
+
+  <section class="block letter">
+    <p class="eyebrow">The invitation</p>
+    <p class="lead">With the love and blessing of their families,</p>
+    <h3>{{ invite.groomFull }}</h3><span class="amp">&amp;</span><h3>{{ invite.brideFull }}</h3>
+    <p>invite you to join them as the two families come together to celebrate their union.</p>
+    <p class="verse">@for (l of invite.message; track l) { {{ l }}<br /> }</p>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">The programme</p>
+    <ol class="prog">
+      @for (p of invite.programme; track p.time) {
+      <li><time>{{ p.time }}</time><div><h4>{{ p.title }}</h4><p>{{ p.note }}</p></div></li>
+      }
+    </ol>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">The location</p>
+    <h3>{{ invite.venue }}</h3>
+    <p>{{ invite.address }}</p>
+    <a class="cta" [href]="mapUrl" target="_blank" rel="noopener">Open in Google Maps</a>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">Look the part</p>
+    <h3>Dress code</h3>
+    <p>We kindly invite you to dress elegantly, in the colours below.</p>
+    <ul class="swatches">
+      @for (c of invite.palette; track c.hex) {
+      <li><i [style.background]="c.hex"></i>{{ c.name }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">Let us know</p>
+    <h3>RSVP</h3>
+    <label class="field">
+      Your full name
+      <input type="text" [value]="guest()" (input)="guest.set($any($event.target).value)" autocomplete="name" />
+    </label>
+    <div class="row">
+      <a class="cta" [href]="rsvp()(true)" target="_blank" rel="noopener">Joyfully accept</a>
+      <a class="cta ghost" [href]="rsvp()(false)" target="_blank" rel="noopener">Regretfully decline</a>
+    </div>
+    <a class="link" [href]="calendarHref()" download="celebration.ics">Save the date to your calendar</a>
+  </section>
+
+  <footer class="block end">
+    <p class="eyebrow">Thank you</p>
+    <h3>{{ invite.groom }} <em>&amp;</em> {{ invite.bride }}</h3>
+    <p>{{ invite.dateLabel }}</p>
+  </footer>
+</main>
+}
