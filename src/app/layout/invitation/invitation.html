@@ -1,94 +1,304 @@
-<canvas #stage class="stage" [class.dim]="phase() === 'reveal' || phase() === 'exploring'" aria-hidden="true"></canvas>
+<div class="experience-shell" [class.is-opening]="phase() === 'opening'" [class.is-open]="phase() === 'exploring' || phase() === 'reveal'">
+  <canvas #stage class="stage" aria-hidden="true"></canvas>
+  <div class="stage-vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
 
-@if (phase() === 'ready' || phase() === 'opening') {
-<section class="intro">
-  <span class="pulse" aria-hidden="true"></span>
-  <p class="eyebrow">Something beautiful is bringing us together</p>
-  @if (phase() === 'ready') {
-  <button class="cta" (click)="begin()">Begin the celebration</button>
+  @if (phase() === 'ready' || phase() === 'opening') {
+  <section class="opening-screen" aria-labelledby="opening-title">
+    <div class="opening-orbit opening-orbit--one" aria-hidden="true"></div>
+    <div class="opening-orbit opening-orbit--two" aria-hidden="true"></div>
+    <div class="opening-content">
+      <span class="opening-monogram">{{ invite.groom.charAt(0) }} <i>&amp;</i> {{ invite.bride.charAt(0) }}</span>
+      <p class="eyebrow">An invitation to celebrate</p>
+      <h1 id="opening-title">Two stories.<br /><em>One beautiful gathering.</em></h1>
+      <p class="opening-copy">A moment made more meaningful by the people who share it.</p>
+      <button class="begin-button" type="button" (click)="begin()" [disabled]="phase() === 'opening' || !sceneReady()">
+        <span>{{ !sceneReady() ? 'Preparing the experience' : phase() === 'opening' ? 'Bringing the moment together' : 'Enter the celebration' }}</span>
+        <span class="button-arrow" aria-hidden="true">↗</span>
+      </button>
+      <button class="skip-button" type="button" (click)="skip()">Skip the introduction</button>
+    </div>
+    <div class="opening-footer">
+      <span>THE CONVERGENCE</span>
+      <span>{{ invite.dateLabel }}</span>
+    </div>
+  </section>
   }
-  <button class="skip" (click)="skip()">Skip to the invitation</button>
-</section>
-} @else {
-<div class="flash" aria-hidden="true"></div>
-<main class="page">
-  <section class="hero">
-    <svg class="bloom b1" viewBox="-50 -50 100 100" aria-hidden="true">
-      @for (a of petals; track a) {
-      <ellipse cx="0" cy="-22" rx="9" ry="22" [attr.transform]="'rotate(' + a + ')'" /> }
-      <circle r="6" />
-    </svg>
-    <svg class="bloom b2" viewBox="-50 -50 100 100" aria-hidden="true">
-      @for (a of petals; track a) {
-      <ellipse cx="0" cy="-22" rx="9" ry="22" [attr.transform]="'rotate(' + a + ')'" /> }
-      <circle r="6" />
-    </svg>
-    <p class="eyebrow">The celebration of</p>
-    <h1>{{ invite.groom }} <em>&amp;</em> {{ invite.bride }}</h1>
-    <h2>{{ invite.occasion }}</h2>
-    <p class="when">{{ invite.dateLabel }} · {{ invite.timeLabel }}</p>
-    <p class="sub">A gathering of family, love and celebration.</p>
-    <div class="count" role="timer" aria-label="Countdown to the celebration">
-      <div><b>{{ pad(left().days) }}</b><span>Days</span></div>
-      <div><b>{{ pad(left().hours) }}</b><span>Hours</span></div>
-      <div><b>{{ pad(left().mins) }}</b><span>Minutes</span></div>
-      <div><b>{{ pad(left().secs) }}</b><span>Seconds</span></div>
-    </div>
-  </section>
 
-  <section class="block letter">
-    <p class="eyebrow">The invitation</p>
-    <p class="lead">With the love and blessing of their families,</p>
-    <h3>{{ invite.groomFull }}</h3><span class="amp">&amp;</span><h3>{{ invite.brideFull }}</h3>
-    <p>invite you to join them as the two families come together to celebrate their union.</p>
-    <p class="verse">@for (l of invite.message; track l) { {{ l }}<br /> }</p>
-  </section>
+  @if (phase() === 'reveal' || phase() === 'exploring') {
+  <div class="reveal-flash" aria-hidden="true"></div>
 
-  <section class="block">
-    <p class="eyebrow">The programme</p>
-    <ol class="prog">
-      @for (p of invite.programme; track p.time) {
-      <li><time>{{ p.time }}</time><div><h4>{{ p.title }}</h4><p>{{ p.note }}</p></div></li>
-      }
-    </ol>
-  </section>
+  <main #page class="invitation-page">
+    <header class="site-header">
+      <a class="brand-mark" href="#home" aria-label="Back to the beginning">
+        <span>{{ invite.groom.charAt(0) }}</span><i>&amp;</i><span>{{ invite.bride.charAt(0) }}</span>
+      </a>
+      <nav class="site-nav" aria-label="Invitation sections">
+        <a href="#story">Our story</a>
+        <a href="#invitation">Invitation</a>
+        <a href="#programme">Programme</a>
+        <a href="#details">Details</a>
+        <a href="#gallery">Gallery</a>
+      </nav>
+      <a class="header-rsvp" href="#rsvp">RSVP <span aria-hidden="true">↗</span></a>
+    </header>
 
-  <section class="block">
-    <p class="eyebrow">The location</p>
-    <h3>{{ invite.venue }}</h3>
-    <p>{{ invite.address }}</p>
-    <a class="cta" [href]="mapUrl" target="_blank" rel="noopener">Open in Google Maps</a>
-  </section>
+    <section id="home" class="hero-section">
+      <div class="hero-photo" data-image-frame>
+        <img [src]="invite.images.hero"
+             [alt]="'Portrait of ' + invite.groom + ' and ' + invite.bride"
+             fetchpriority="high"
+             decoding="async"
+             (load)="imageLoaded($event)"
+             (error)="imageFailed($event)" />
+        <div class="photo-fallback photo-fallback--hero" aria-hidden="true">
+          <span class="fallback-kicker">A celebration of love</span>
+          <span class="fallback-initials">{{ invite.groom.charAt(0) }} <i>&amp;</i> {{ invite.bride.charAt(0) }}</span>
+          <span class="fallback-note">Add the couple’s portrait at<br />assets/images/couple-hero.webp</span>
+        </div>
+      </div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-content" data-reveal>
+        <p class="eyebrow eyebrow--light">Together with their families</p>
+        <p class="hero-pretitle">invite you to celebrate</p>
+        <h1><span>{{ invite.groom }}</span><em>&amp;</em><span>{{ invite.bride }}</span></h1>
+        <div class="hero-rule"><span></span><i>✳</i><span></span></div>
+        <p class="hero-occasion">{{ invite.occasion }}</p>
+        <p class="hero-date">{{ invite.dateLabel }} <b>·</b> {{ invite.timeLabel }}</p>
+        <a class="hero-discover" href="#story"><span>Discover the celebration</span><i aria-hidden="true">↓</i></a>
+      </div>
+      <div class="hero-index"><span>01</span><span>THE BEGINNING</span></div>
+    </section>
 
-  <section class="block">
-    <p class="eyebrow">Look the part</p>
-    <h3>Dress code</h3>
-    <p>We kindly invite you to dress elegantly, in the colours below.</p>
-    <ul class="swatches">
-      @for (c of invite.palette; track c.hex) {
-      <li><i [style.background]="c.hex"></i>{{ c.name }}</li>
-      }
-    </ul>
-  </section>
+    <section id="story" class="story-section section-pad">
+      <div class="section-index" data-reveal><span>01 / A SHARED STORY</span><i></i><span>THE PEOPLE</span></div>
+      <div class="story-layout">
+        <div class="story-copy" data-reveal>
+          <p class="eyebrow">The beautiful part is who we share it with</p>
+          <h2>Some moments<br />are made <em>for together.</em></h2>
+          <p class="body-copy">With the love and blessing of their families, {{ invite.groomFull }} and {{ invite.brideFull }} invite you to be part of a day filled with connection, tradition and new memories.</p>
+          <p class="body-copy body-copy--small">Your presence is more than a seat at the table. It is part of the story, and they would be honoured to celebrate with you.</p>
+          <a class="text-link" href="#invitation">Read the invitation <span aria-hidden="true">↗</span></a>
+        </div>
+        <figure class="photo-frame photo-frame--portrait" data-image-frame data-reveal>
+          <img [src]="invite.images.story"
+               alt="A favourite portrait from the couple’s story"
+               loading="lazy"
+               decoding="async"
+               (load)="imageLoaded($event)"
+               (error)="imageFailed($event)" />
+          <div class="photo-fallback" aria-hidden="true"><span>THE TWO OF US</span><i>✳</i><small>Add couple-story.webp</small></div>
+          <figcaption>A moment in their story.</figcaption>
+        </figure>
+        <figure class="photo-frame photo-frame--small" data-image-frame data-reveal>
+          <img [src]="invite.images.family"
+               alt="Family and loved ones coming together"
+               loading="lazy"
+               decoding="async"
+               (load)="imageLoaded($event)"
+               (error)="imageFailed($event)" />
+          <div class="photo-fallback" aria-hidden="true"><span>THE PEOPLE WE LOVE</span><i>✳</i><small>Add family-gathering.webp</small></div>
+          <figcaption>Two families, one gathering.</figcaption>
+        </figure>
+      </div>
+      <div class="story-signature" aria-hidden="true">Together is the beautiful part.</div>
+    </section>
 
-  <section class="block">
-    <p class="eyebrow">Let us know</p>
-    <h3>RSVP</h3>
-    <label class="field">
-      Your full name
-      <input type="text" [value]="guest()" (input)="guest.set($any($event.target).value)" autocomplete="name" />
-    </label>
-    <div class="row">
-      <a class="cta" [href]="rsvp()(true)" target="_blank" rel="noopener">Joyfully accept</a>
-      <a class="cta ghost" [href]="rsvp()(false)" target="_blank" rel="noopener">Regretfully decline</a>
-    </div>
-    <a class="link" [href]="calendarHref()" download="celebration.ics">Save the date to your calendar</a>
-  </section>
+    <section id="invitation" class="invitation-section section-pad">
+      <div class="invitation-ornament invitation-ornament--left" aria-hidden="true">✳</div>
+      <div class="invitation-card" data-reveal>
+        <p class="eyebrow">The invitation</p>
+        <div class="invitation-card-rule"><span></span><i>✦</i><span></span></div>
+        <p class="invitation-lead">With the love and blessing of their families,</p>
+        <h2>{{ invite.groomFull }} <em>&amp;</em><br />{{ invite.brideFull }}</h2>
+        <p class="invitation-body">invite you to join them as their families come together to celebrate this special occasion.</p>
+        <div class="invitation-verse">
+          @for (line of invite.message; track line) {
+          <span>{{ line }}</span>
+          }
+        </div>
+        <div class="invitation-card-rule"><span></span><i>✦</i><span></span></div>
+        <p class="invitation-date">{{ invite.dateLabel }}</p>
+        <p class="invitation-time">{{ invite.timeLabel }}</p>
+      </div>
+      <div class="invitation-ornament invitation-ornament--right" aria-hidden="true">✳</div>
+    </section>
 
-  <footer class="block end">
-    <p class="eyebrow">Thank you</p>
-    <h3>{{ invite.groom }} <em>&amp;</em> {{ invite.bride }}</h3>
-    <p>{{ invite.dateLabel }}</p>
-  </footer>
-</main>
-}
+    <section class="countdown-section">
+      <div class="countdown-copy" data-reveal>
+        <p class="eyebrow eyebrow--light">The day is getting closer</p>
+        <h2>Until we <em>gather.</em></h2>
+      </div>
+      <div class="countdown-grid" role="timer" [attr.aria-label]="daysLabel()" data-reveal>
+        <div class="count-unit"><strong>{{ pad(left().days) }}</strong><span>Days</span></div>
+        <div class="count-divider"></div>
+        <div class="count-unit"><strong>{{ pad(left().hours) }}</strong><span>Hours</span></div>
+        <div class="count-divider"></div>
+        <div class="count-unit"><strong>{{ pad(left().mins) }}</strong><span>Minutes</span></div>
+        <div class="count-divider"></div>
+        <div class="count-unit"><strong>{{ pad(left().secs) }}</strong><span>Seconds</span></div>
+      </div>
+      <div class="countdown-caption">A day to remember · A memory to keep</div>
+    </section>
+
+    <section id="programme" class="programme-section section-pad">
+      <div class="section-index" data-reveal><span>02 / THE FLOW OF THE DAY</span><i></i><span>THE PROGRAMME</span></div>
+      <div class="programme-heading" data-reveal>
+        <p class="eyebrow">A day shared in good company</p>
+        <h2>Every moment,<br /><em>worth gathering for.</em></h2>
+      </div>
+      <div class="programme-layout">
+        <figure class="programme-photo photo-frame" data-image-frame data-reveal>
+          <img [src]="invite.images.programme"
+               alt="A detail from the celebration setting"
+               loading="lazy"
+               decoding="async"
+               (load)="imageLoaded($event)"
+               (error)="imageFailed($event)" />
+          <div class="photo-fallback photo-fallback--wide" aria-hidden="true"><span>THE DAY, BEAUTIFULLY SHARED</span><i>✦</i><small>Add celebration-detail.webp</small></div>
+          <figcaption>The day, beautifully shared.</figcaption>
+        </figure>
+        <ol class="programme-list">
+          @for (item of invite.programme; track item.time; let index = $index) {
+          <li data-reveal>
+            <span class="programme-number">0{{ index + 1 }}</span>
+            <time>{{ item.time }}</time>
+            <div class="programme-item-copy"><h3>{{ item.title }}</h3><p>{{ item.note }}</p></div>
+            <span class="programme-star" aria-hidden="true">✳</span>
+          </li>
+          }
+        </ol>
+      </div>
+    </section>
+
+    <section class="dress-section section-pad">
+      <div class="dress-image" data-image-frame data-reveal>
+        <img [src]="invite.images.dressCode"
+             alt="An editorial detail of the celebration and attire"
+             loading="lazy"
+             decoding="async"
+             (load)="imageLoaded($event)"
+             (error)="imageFailed($event)" />
+        <div class="photo-fallback photo-fallback--dress" aria-hidden="true"><span>THE COLOURS OF THE DAY</span><i>✳</i></div>
+      </div>
+      <div class="dress-content" data-reveal>
+        <p class="eyebrow">Look the part</p>
+        <h2>A little colour.<br /><em>A lot of meaning.</em></h2>
+        <p class="body-copy">We kindly invite you to dress elegantly for this special occasion. To complement the celebration, we ask that you dress in the colours displayed here.</p>
+        <div class="palette-list">
+          @for (colour of invite.palette; track colour.hex) {
+          <div class="palette-item"><span class="swatch" [style.backgroundColor]="colour.hex"></span><span>{{ colour.name }}</span></div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section id="details" class="details-section section-pad">
+      <div class="section-index" data-reveal><span>03 / FIND YOUR WAY</span><i></i><span>THE LOCATION</span></div>
+      <div class="details-layout">
+        <div class="details-copy" data-reveal>
+          <p class="eyebrow">We'll save you a place</p>
+          <h2>Meet us <em>there.</em></h2>
+          <p class="venue-name">{{ invite.venue }}</p>
+          <p class="body-copy">{{ invite.address }}</p>
+          <p class="details-date">{{ invite.dateLabel }} <span>·</span> {{ invite.timeLabel }}</p>
+          <a class="outline-button" [href]="mapUrl" target="_blank" rel="noopener noreferrer">Open directions <span aria-hidden="true">↗</span></a>
+          <a class="calendar-link" [href]="calendarHref()" download="celebration.ics">Add the date to your calendar ↓</a>
+        </div>
+        <figure class="venue-photo photo-frame" data-image-frame data-reveal>
+          <img [src]="invite.images.venue"
+               alt="The celebration venue"
+               loading="lazy"
+               decoding="async"
+               (load)="imageLoaded($event)"
+               (error)="imageFailed($event)" />
+          <div class="photo-fallback photo-fallback--venue" aria-hidden="true"><span>THE PLACE WE GATHER</span><i>⌖</i><small>Add venue.webp</small></div>
+          <figcaption>The place we'll gather.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="gallery" class="gallery-section section-pad">
+      <div class="gallery-heading" data-reveal>
+        <p class="eyebrow">A few moments to hold onto</p>
+        <h2>Fragments of <em>forever.</em></h2>
+        <p>Open a photograph and take a closer look.</p>
+      </div>
+      <div class="gallery-grid">
+        @for (photo of invite.images.gallery; track photo.src; let index = $index) {
+        <button class="gallery-tile"
+                [class.gallery-tile--large]="index === 0 || index === 5"
+                type="button"
+                (click)="openPhoto(photo)"
+                [attr.aria-label]="'Open photograph: ' + photo.caption"
+                data-reveal
+                [attr.data-gallery-index]="index">
+          <span class="gallery-image" data-image-frame>
+            <img [src]="photo.src"
+                 [alt]="photo.alt"
+                 loading="lazy"
+                 decoding="async"
+                 (load)="imageLoaded($event)"
+                 (error)="imageFailed($event)" />
+            <span class="photo-fallback photo-fallback--gallery" aria-hidden="true"><i>✳</i><small>Gallery photograph {{ index + 1 }}</small></span>
+          </span>
+          <span class="gallery-tile-caption"><span>{{ photo.caption }}</span><i aria-hidden="true">↗</i></span>
+        </button>
+        }
+      </div>
+    </section>
+
+    <section id="rsvp" class="rsvp-section section-pad">
+      <div class="rsvp-ornament" aria-hidden="true">✳</div>
+      <div class="rsvp-content" data-reveal>
+        <p class="eyebrow eyebrow--light">Your presence would mean the world</p>
+        <h2>Will you join <em>us?</em></h2>
+        <p>Kindly let the family know whether we can save you a place.</p>
+        <label class="guest-field" for="guest-name">Your full name</label>
+        <input id="guest-name"
+               class="guest-input"
+               type="text"
+               autocomplete="name"
+               placeholder="Enter your name"
+               [value]="guest()"
+               (input)="updateGuest($event)" />
+        <div class="guest-count-control" aria-label="Number of guests attending">
+          <span>Number attending</span>
+          <div class="guest-stepper">
+            <button type="button" aria-label="Remove one guest" (click)="changeGuestCount(-1)">−</button>
+            <strong aria-live="polite">{{ guestCount() }}</strong>
+            <button type="button" aria-label="Add one guest" (click)="changeGuestCount(1)">+</button>
+          </div>
+        </div>
+        @if (guestError()) {
+        <p class="form-error" role="alert">{{ guestError() }}</p>
+        }
+        <div class="rsvp-actions">
+          <button class="rsvp-button rsvp-button--primary" type="button" (click)="sendRsvp(true)">Joyfully accept <span aria-hidden="true">↗</span></button>
+          <button class="rsvp-button rsvp-button--secondary" type="button" (click)="sendRsvp(false)">Regretfully decline <span aria-hidden="true">↗</span></button>
+        </div>
+        <p class="rsvp-note">Your reply will open in WhatsApp, ready for you to send.</p>
+      </div>
+    </section>
+
+    <footer class="closing-section">
+      <p class="eyebrow">With love, and with gratitude</p>
+      <h2>{{ invite.groom }} <em>&amp;</em> {{ invite.bride }}</h2>
+      <p>{{ invite.dateLabel }} · {{ invite.timeLabel }}</p>
+      <div class="closing-rule"><span></span><i>✦</i><span></span></div>
+      <a href="#home" class="back-to-top">Return to the beginning ↑</a>
+      <small>MADE WITH LOVE · THE CONVERGENCE</small>
+    </footer>
+  </main>
+
+  @if (activePhoto(); as photo) {
+  <div class="lightbox" role="dialog" aria-modal="true" [attr.aria-label]="photo.caption" (click)="closePhoto()">
+    <button class="lightbox-close" type="button" aria-label="Close photograph" (click)="closePhoto()">×</button>
+    <figure class="lightbox-figure" (click)="stopPropagation($event)">
+      <img [src]="photo.src" [alt]="photo.alt" />
+      <figcaption>{{ photo.caption }}</figcaption>
+    </figure>
+  </div>
+  }
+  }
+</div>
